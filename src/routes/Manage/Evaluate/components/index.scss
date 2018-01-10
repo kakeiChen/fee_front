@@ -1,0 +1,21 @@
+html{
+  body{
+    padding: 8px;
+    font-size: 16px;
+    .am-textarea-label.am-textarea-label-5, .am-list-item .am-input-label.am-input-label-5{
+      width: 50px;
+    }
+    .am-card-header, .am-textarea-label,.am-list-item .am-input-label{
+      font-size: 16px;
+    }
+    .am-card-body{
+      padding: 8px;
+    }
+    .box{
+      padding:5px;
+      border-radius: 5px;
+      border:1px solid #ddd;
+      margin-bottom: 5px;
+    }
+  }
+}
