@@ -2,8 +2,15 @@ import React, { Component } from 'react';
 import { Button, Card, TextareaItem, InputItem, Toast } from 'antd-mobile';
 import './index.scss';
 
+
 class View extends Component {
   state = {
+    meritF:false,
+    meritS:false,
+    meritT:false,
+    defectF:false,
+    defectS:false,
+    defectT:false,
     mfHasError:false,
     msHasError:false,
     mtHasError:false,
@@ -18,6 +25,11 @@ class View extends Component {
   onChange = (name, value) => {
     const newValue = value.trim();
     this.props.changeRecord({ [`${name}`]: newValue });
+    if (newValue !== '') {
+      this.setState({
+        [`${name}`]: true,
+      });
+    }
   };
   onScoreChange = (name, type, value) => {
     const newValue = value.trim();
@@ -29,13 +41,14 @@ class View extends Component {
       this.setState({
         [`${type}`]: false,
       });
-      this.props.changeRecord({ [`${name}`]: newValue });
-      this.props.addScore();
     }
+    this.props.changeRecord({ [`${name}`]: newValue });
+    this.props.addScore();
   };
   toList = () => {
     location.href = '/Manage/ShareList';
   };
+  // 必填项校验
   necessary = () => {
     const { record } = this.props;
     return (
@@ -45,27 +58,32 @@ class View extends Component {
       || record.defectScoreF === ''
     );
   };
+  // 完整性校验
+  incompleteAssist = (m, s) => (
+    (m === '' && s !== '') || (m !== '' && s === '')
+  );
   incomplete = () => {
     const { record } = this.props;
-    if (record.meritS === '' && record.meritScoreS !== '') {
+    if (this.incompleteAssist(record.meritS, record.meritScoreS)) {
       return true;
     }
-    if (record.meritT === '' && record.meritScoreT !== '') {
+    if (this.incompleteAssist(record.meritT, record.meritScoreT)) {
       return true;
     }
-    if (record.defectS === '' && record.defectScoreS !== '') {
+    if (this.incompleteAssist(record.defectS, record.defectScoreS)) {
       return true;
     }
-    return (record.defectT === '' && record.defectScoreT !== '');
+    return (this.incompleteAssist(record.defectT, record.defectScoreT));
   };
+  errorScoreAssist = (s) => (s !== '' && s !== '1' && s !== '2');
   errorScore = () => {
     const { record } = this.props;
-    if (record.meritScoreF !== '' && record.meritScoreF !== '1' && record.meritScoreF !== '2') { return true; }
-    if (record.meritScoreS !== '' && record.meritScoreS !== '1' && record.meritScoreS !== '2') { return true; }
-    if (record.meritScoreT !== '' && record.meritScoreT !== '1' && record.meritScoreT !== '2') { return true; }
-    if (record.defectScoreF !== '' && record.defectScoreF !== '1' && record.defectScoreF !== '2') { return true; }
-    if (record.defectScoreS !== '' && record.defectScoreS !== '1' && record.defectScoreS !== '2') { return true; }
-    return (record.defectScoreT !== '' && record.defectScoreT !== '1' && record.defectScoreT !== '2');
+    if (this.errorScoreAssist(record.meritScoreF)) { return true; }
+    if (this.errorScoreAssist(record.meritScoreS)) { return true; }
+    if (this.errorScoreAssist(record.meritScoreT)) { return true; }
+    if (this.errorScoreAssist(record.defectScoreF)) { return true; }
+    if (this.errorScoreAssist(record.defectScoreS)) { return true; }
+    return (this.errorScoreAssist(record.defectScoreT));
   };
   submit = () => {
     const { record } = this.props;
@@ -74,13 +92,13 @@ class View extends Component {
       id:this.props.params.id,
     };
     if (this.necessary()) {
-      Toast.fail('请将必填项填写完整', 1);
-    } else if (record.score < 6 || record.score > 10) {
-      Toast.fail('总分不符合规定', 1);
+      Toast.fail('请将必填项填写完整', 2);
+    } else if (record.score > 10) {
+      Toast.fail('总分不符合规定', 2);
     } else if (this.incomplete()) {
-      Toast.fail('不要光填分数', 1);
+      Toast.fail('优缺点和分数请填写完整', 2);
     } else if (this.errorScore()) {
-      Toast.fail('请按要求填写分数', 1);
+      Toast.fail('请按要求填写分数', 2);
     } else {
       this.props.submit({ ...values }).then(
         (success) => {
@@ -90,7 +108,6 @@ class View extends Component {
     }
   };
   render() {
-    // console.log(this.props.record);
     return (
       <div>
         <Card className="card" style={{ margin:'5px' }}>

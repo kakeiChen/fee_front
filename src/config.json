@@ -1,6 +1,6 @@
 {
   "apiAddress": {
-    "development": "//172.16.14.167:3001",
+    "development": "//wirelessvote.51jijian.com:3001",
     "test": "//172.16.1.180:8007",
     "uat": "//139.224.7.172",
     "production": "//139.224.218.37",
